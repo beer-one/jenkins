@@ -1,0 +1,60 @@
+node {
+
+    def buildNumber = currentBuild.number
+    def appName = "todo-api"
+
+    def appRepo = "https://github.com/beer-one/TodoList.git"
+    def appBranch = "main"
+    def appDirectory = "TodoList-server-kotlin"
+
+    def baseImage = "openjdk:17-alpine"
+    def appImage = "beer1/todo-server-kotlin"
+    def tag = "test"
+
+    def valueFile = "todo-list/todo-api.yaml"
+    
+    checkout([
+        $class: 'GitSCM', 
+        branches: [[name: "*/${appBranch}"]], 
+        userRemoteConfigs: [[url: appRepo]]
+    ])
+
+    sh "cd ${appDirectory}"
+
+    stage('Build') {
+        sh 'gradle build -x test'
+    }
+    
+    stage('Test') {
+        sh 'gradle test'
+    }
+
+    stage('Package') {
+        def jib = """
+        |gradle jib -Djib.from.image=${baseImage} \\
+        |    -Djib.to.image=${appImage}
+        |    -Djib.to.tags=${tag}
+        """.stripMargin()
+
+        sh(script: jib)
+    }
+    
+    stage('Deploy') {
+
+        checkout([
+            $class: 'GitSCM', 
+            branches: [[name: '*/main']], 
+            userRemoteConfigs: [[url: 'https://github.com/beer-one/TodoList.git']]
+        ])
+
+        def deployScripts = """
+        |sed -i 's/$(yq .podAnnotations.buildNumber ${valueFile})/build-${buildNumber}/g ${valueFile}
+        |sed -i 's@$(yq .app.image ${valueFile})@${appImage}:${tag}@g ${valueFile}
+        |git add .
+        |git commit -m "Deploy ${appName} (${appImage}:${tag})"
+        |git push  
+        """.stripMargin()
+
+        sh(script: deployScripts)
+    }
+}
