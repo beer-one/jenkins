@@ -1,4 +1,4 @@
-node {
+node("gradle-7-4-2-jdk17") {
 
     def buildNumber = currentBuild.number
     def appName = "todo-api"
