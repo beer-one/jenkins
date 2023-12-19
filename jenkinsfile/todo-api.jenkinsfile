@@ -22,7 +22,7 @@ node {
     sh "cd ${appDirectory}"
 
     stage('Build') {
-        sh 'gradle build -x test'
+        sh 'gradle build -x test -x jib'
     }
     
     stage('Test') {
