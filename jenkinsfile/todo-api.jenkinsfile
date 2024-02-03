@@ -17,6 +17,8 @@ node("gradle-7-4-2-jdk17") {
     checkout([
         $class: 'GitSCM', 
         branches: [[name: "*/${appBranch}"]], 
+        doGenerateSubmoduleConfigurations: false,
+        extensions: [[$class: 'WipeWorkspace'], [$class: 'LocalBranch', LocalBranch: '**']],
         userRemoteConfigs: [[url: appRepo]]
     ])
 
@@ -50,6 +52,8 @@ node("gradle-7-4-2-jdk17") {
                 checkout([
                     $class: 'GitSCM', 
                     branches: [[name: '*/main']], 
+                    doGenerateSubmoduleConfigurations: false,
+                    extensions: [[$class: 'WipeWorkspace'], [$class: 'LocalBranch', LocalBranch: '**']],
                     userRemoteConfigs: [[url: "https://${manifestRepo}"]]
                 ])
 
