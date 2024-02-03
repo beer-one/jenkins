@@ -54,6 +54,8 @@ node("gradle-7-4-2-jdk17") {
                 ])
 
                 def deployScripts = """
+                |git config --global user.email "floidea@naver.com"
+                |git config --global user.name ${username}
                 |sed -i "s/name: \$(yq .podAnnotations.buildNumber ${valueFile})/name: build-${buildNumber}/g" ${valueFile}
                 |sed -i "s@image: \$(yq .app.image ${valueFile})@image: ${appImage}:${tag}@g" ${valueFile}
                 |git add .
