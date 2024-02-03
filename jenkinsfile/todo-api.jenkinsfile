@@ -52,8 +52,8 @@ node("gradle-7-4-2-jdk17") {
             ])
 
             def deployScripts = """
-            |sed -i 's/\$(yq .podAnnotations.buildNumber ${valueFile})/build-${buildNumber}/g ${valueFile}
-            |sed -i 's@\$(yq .app.image ${valueFile})@${appImage}:${tag}@g ${valueFile}
+            |sed -i 's/\$(yq .podAnnotations.buildNumber ${valueFile})/build-${buildNumber}/g' ${valueFile}
+            |sed -i 's@\$(yq .app.image ${valueFile})@${appImage}:${tag}@g' ${valueFile}
             |git add .
             |git commit -m "Deploy ${appName} (${appImage}:${tag})"
             |git push  
