@@ -30,13 +30,17 @@ node("gradle-7-4-2-jdk17") {
         }
 
         stage('Package') {
-            def jib = """
-            |gradle jib -Djib.from.image=${baseImage} \\
-            |    -Djib.to.image=${appImage} \\
-            |    -Djib.to.tags=${tag}
-            """.stripMargin()
+            withCredentials([usernamePassword(credentialsId: "docker-hub-credential", passwordVariable: "password", usernameVariable: "username")]) {
+                def jib = """
+                |gradle jib -Djib.from.image=${baseImage} \\
+                |    -Djib.to.image=${appImage} \\
+                |    -Djib.to.tags=${tag} \\
+                |    -Djib.to.auth.username=${username} \\
+                |    -Djib.to.auth.password=${password} 
+                """.stripMargin()
 
-            sh(script: jib)
+                sh(script: jib)
+            }
         }
         
         stage('Deploy') {
