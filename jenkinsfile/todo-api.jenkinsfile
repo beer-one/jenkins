@@ -7,7 +7,7 @@ node("gradle-7-4-2-jdk17") {
     def appBranch = "main"
     def appDirectory = "TodoList-server-kotlin"
 
-    def baseImage = "openjdk:17-alpine"
+    def baseImage = "openjdk:17-jdk-slim"
     def appImage = "beer1/todo-server-kotlin"
     def tag = "test"
 
